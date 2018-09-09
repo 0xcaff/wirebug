@@ -1,10 +1,10 @@
+use nom::IResult;
 use std::fmt;
 use std::fmt::Formatter;
-use nom::IResult;
 
 #[derive(Eq, PartialEq)]
 pub struct MacAddress {
-    value: [u8; 6]
+    value: [u8; 6],
 }
 
 named!(pub parse_mac_address<MacAddress>,
@@ -47,10 +47,7 @@ mod tests {
     #[test]
     fn parse() {
         let (_, addr) = MacAddress::parse(&[1, 2, 3, 4, 5, 250]).unwrap();
-        assert_eq!(
-            addr,
-            MacAddress::new([1, 2, 3, 4, 5, 250])
-        )
+        assert_eq!(addr, MacAddress::new([1, 2, 3, 4, 5, 250]))
     }
 
     #[test]
@@ -59,4 +56,3 @@ mod tests {
         assert_eq!(format!("{:?}", addr), "01:02:03:04:05:fa");
     }
 }
-

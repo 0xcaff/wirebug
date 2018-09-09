@@ -1,5 +1,5 @@
-use mac_address::{MacAddress, parse_mac_address};
-use nom::{IResult, be_u16};
+use mac_address::{parse_mac_address, MacAddress};
+use nom::{be_u16, IResult};
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct EtherFrame {
@@ -10,8 +10,9 @@ pub struct EtherFrame {
 
 impl EtherFrame {
     fn parse(input: &[u8]) -> IResult<&[u8], EtherFrame> {
-        do_parse!(input,
-            destination: parse_mac_address >>
+        do_parse!(
+            input,
+            destination: parse_mac_address >> 
             source: parse_mac_address >>
             ether_type: parse_ether_type >>
 
@@ -31,7 +32,8 @@ enum EtherType {
     Other(u16),
 }
 
-named!(parse_ether_type<EtherType>,
+named!(
+    parse_ether_type<EtherType>,
     do_parse!(
         data: be_u16 >>
 
@@ -47,9 +49,9 @@ named!(parse_ether_type<EtherType>,
 mod tests {
     extern crate hex;
 
-    use mac_address::MacAddress;
     use ether::EtherFrame;
     use ether::EtherType;
+    use mac_address::MacAddress;
 
     #[test]
     fn parse() {

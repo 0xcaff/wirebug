@@ -2,10 +2,10 @@
 extern crate nom;
 extern crate core;
 
-mod mac_address;
 mod ether;
 mod icmp;
 mod ip;
+mod mac_address;
 mod tcp;
 mod udp;
 

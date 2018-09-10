@@ -77,6 +77,13 @@ mod tests {
         // From: https://erg.abdn.ac.uk/users/gorry/eg3561/inet-pages/packet-dec2.html
         let input = hex::decode("000045da1e600000335e3ab8000042ac08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637").unwrap();
         let (_, packet) = IcmpPacket::parse(&input).unwrap();
-        assert_eq!(packet, IcmpPacket::new(PacketType::new(0), 0, 0x45da))
+        assert_eq!(
+            packet,
+            IcmpPacket {
+                packet_type: PacketType::new(0),
+                code: 0,
+                checksum: 0x45da,
+            }
+        )
     }
 }

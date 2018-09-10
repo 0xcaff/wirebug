@@ -58,13 +58,13 @@ mod tests {
         let (_, packet) = UdpPacket::parse(&raw).unwrap();
         assert_eq!(
             packet,
-            UdpPacket::new(
-                39376,
-                1087,
-                18,
-                0x7228,
-                hex::decode("68656c6c6f68656c6c6f").unwrap(),
-            )
+            UdpPacket {
+                source_port: 39376,
+                destination_port: 1087,
+                length: 18,
+                checksum: 0x7228,
+                data: hex::decode("68656c6c6f68656c6c6f").unwrap(),
+            },
         )
     }
 }

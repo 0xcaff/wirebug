@@ -186,7 +186,16 @@ mod tests {
     fn parse_tos() {
         let raw: u8 = 0b10000100;
         let (_, tos) = TypeOfService::parse(&[raw]).unwrap();
-        assert_eq!(tos, TypeOfService::new(raw, 0b100, false, false, true))
+        assert_eq!(
+            tos,
+            TypeOfService {
+                raw,
+                precedence: 0b100,
+                low_delay: false,
+                high_throughput: false,
+                high_reliability: true
+            }
+        )
     }
 
     #[test]
@@ -205,20 +214,20 @@ mod tests {
         let (_, packet) = Ipv4Header::parse(&raw).unwrap();
         assert_eq!(
             packet,
-            Ipv4Header::new(
-                5,
-                TypeOfService::parse(&[0x20]).unwrap().1,
-                60,
-                0x16db,
-                false,
-                false,
-                0,
-                63,
-                Protocol::TCP,
-                0xcc8a,
-                Ipv4Addr::new(213, 233, 171, 10),
-                Ipv4Addr::new(94, 182, 184, 140),
-            )
+            Ipv4Header {
+                internet_header_length: 20,
+                type_of_service: TypeOfService::parse(&[0x20]).unwrap().1,
+                total_length: 60,
+                identification: 0x16db,
+                dont_fragment: false,
+                more_fragments: false,
+                fragment_offset: 0,
+                time_to_live: 63,
+                protocol: Protocol::TCP,
+                header_checksum: 0xcc8a,
+                source: Ipv4Addr::new(213, 233, 171, 10),
+                destination: Ipv4Addr::new(94, 182, 184, 140),
+            },
         )
     }
 }

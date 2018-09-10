@@ -118,10 +118,24 @@ mod tests {
         let (_, packet) = TcpHeader::parse(&raw).unwrap();
         assert_eq!(
             packet,
-            TcpHeader::new(
-                36869, 23, 1913975060, 0, 24, false, false, false, false, true, false, 8760,
-                0xa92c, 0
-            )
+            TcpHeader {
+                source_port: 36869,
+                destination_port: 23,
+                sequence_number: 1913975060,
+                acknowledgment_number: 0,
+                data_offset: 24,
+
+                urgent: false,
+                acknowledgment: false,
+                push: false,
+                reset: false,
+                synchronize: true,
+                fin: false,
+
+                window_size: 8760,
+                checksum: 0xa92c,
+                urgent_pointer: 0
+            },
         )
     }
 }

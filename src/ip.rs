@@ -23,40 +23,6 @@ pub struct Ipv4Header {
 }
 
 impl Ipv4Header {
-    pub fn new(
-        internet_header_length: u8,
-
-        type_of_service: TypeOfService,
-
-        total_length: u16,
-        identification: u16,
-
-        dont_fragment: bool,
-        more_fragments: bool,
-
-        fragment_offset: u16,
-        time_to_live: u8,
-        protocol: Protocol,
-        header_checksum: u16,
-        source: Ipv4Addr,
-        destination: Ipv4Addr,
-    ) -> Ipv4Header {
-        Ipv4Header {
-            internet_header_length,
-            type_of_service,
-            total_length,
-            identification,
-            dont_fragment,
-            more_fragments,
-            fragment_offset,
-            time_to_live,
-            protocol,
-            header_checksum,
-            source,
-            destination,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], Ipv4Header> {
         parse_ip_header(input)
     }

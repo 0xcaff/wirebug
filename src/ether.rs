@@ -9,14 +9,6 @@ pub struct EtherFrame {
 }
 
 impl EtherFrame {
-    pub fn new(destination: MacAddress, source: MacAddress, ether_type: EtherType) -> EtherFrame {
-        EtherFrame {
-            destination,
-            source,
-            ether_type,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], EtherFrame> {
         do_parse!(
             input,

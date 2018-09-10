@@ -8,14 +8,6 @@ pub struct IcmpPacket {
 }
 
 impl IcmpPacket {
-    pub fn new(packet_type: PacketType, code: u8, checksum: u16) -> IcmpPacket {
-        IcmpPacket {
-            packet_type,
-            code,
-            checksum,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], IcmpPacket> {
         parse_icmp_packet(input)
     }

@@ -31,14 +31,6 @@ pub struct Packet {
 }
 
 impl Packet {
-    pub fn new(frame: EtherFrame, ip_header: Ipv4Header, contents: PacketContents) -> Packet {
-        Packet {
-            frame,
-            ip_header,
-            contents,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> Result<Packet, ParseError> {
         let (after_ether_header, ether_frame) =
             EtherFrame::parse(input).map_err(|_e| ParseError::InvalidEthernetFrame)?;
@@ -126,14 +118,14 @@ mod tests {
 
         assert_eq!(
             packet,
-            Packet::new(
-                EtherFrame::parse(&raw_ether_frame).unwrap().1,
-                Ipv4Header::parse(&raw_ip_header).unwrap().1,
-                PacketContents::ICMP {
+            Packet {
+                frame: EtherFrame::parse(&raw_ether_frame).unwrap().1,
+                ip_header: Ipv4Header::parse(&raw_ip_header).unwrap().1,
+                contents: PacketContents::ICMP {
                     header: IcmpHeader::parse(&raw_icmp_header).unwrap().1,
                     data: raw_icmp_data,
                 }
-            )
+            }
         )
     }
 
@@ -153,14 +145,14 @@ mod tests {
 
         assert_eq!(
             packet,
-            Packet::new(
-                EtherFrame::parse(&raw_ether_frame).unwrap().1,
-                Ipv4Header::parse(&raw_ip_header).unwrap().1,
-                PacketContents::TCP {
+            Packet {
+                frame: EtherFrame::parse(&raw_ether_frame).unwrap().1,
+                ip_header: Ipv4Header::parse(&raw_ip_header).unwrap().1,
+                contents: PacketContents::TCP {
                     header: TcpHeader::parse(&raw_tcp_packet).unwrap().1,
                     data: Vec::new(),
                 },
-            )
+            },
         )
     }
 
@@ -179,13 +171,13 @@ mod tests {
 
         assert_eq!(
             packet,
-            Packet::new(
-                EtherFrame::parse(&raw_ether_frame).unwrap().1,
-                Ipv4Header::parse(&raw_ip_header).unwrap().1,
-                PacketContents::UDP {
+            Packet {
+                frame: EtherFrame::parse(&raw_ether_frame).unwrap().1,
+                ip_header: Ipv4Header::parse(&raw_ip_header).unwrap().1,
+                contents: PacketContents::UDP {
                     packet: UdpPacket::parse(&raw_udp_packet).unwrap().1
                 },
-            )
+            }
         )
     }
 }

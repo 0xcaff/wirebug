@@ -63,7 +63,7 @@ impl Ipv4Header {
 
     pub fn protocol(&self) -> &Protocol {
         &self.protocol
-}
+    }
 }
 
 named!(
@@ -83,8 +83,10 @@ named!(
         header_checksum:        bytes!(be_u16) >>
         source:                 bytes!(parse_ip_addr) >>
         destination:            bytes!(parse_ip_addr) >>
-            (Ipv4Header {
-            internet_header_length,
+                                bytes!(take!((internet_header_length - 5) * 4)) >>
+
+        (Ipv4Header {
+            internet_header_length: internet_header_length * 4,
             type_of_service,
             total_length,
             identification,

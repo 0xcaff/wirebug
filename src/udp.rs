@@ -10,22 +10,6 @@ pub struct UdpPacket {
 }
 
 impl UdpPacket {
-    pub fn new(
-        source_port: u16,
-        destination_port: u16,
-        length: u16,
-        checksum: u16,
-        data: Vec<u8>,
-    ) -> UdpPacket {
-        UdpPacket {
-            source_port,
-            destination_port,
-            length,
-            checksum,
-            data,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], UdpPacket> {
         parse_udp_packet(input)
     }

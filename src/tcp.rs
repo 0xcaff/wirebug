@@ -22,42 +22,6 @@ pub struct TcpHeader {
 }
 
 impl TcpHeader {
-    fn new(
-        source_port: u16,
-        destination_port: u16,
-        sequence_number: u32,
-        acknowledgment_number: u32,
-        data_offset: u8,
-
-        urgent: bool,
-        acknowledgment: bool,
-        push: bool,
-        reset: bool,
-        synchronize: bool,
-        fin: bool,
-
-        window_size: u16,
-        checksum: u16,
-        urgent_pointer: u16,
-    ) -> TcpHeader {
-        TcpHeader {
-            source_port,
-            destination_port,
-            sequence_number,
-            acknowledgment_number,
-            data_offset,
-            urgent,
-            acknowledgment,
-            push,
-            reset,
-            synchronize,
-            fin,
-            window_size,
-            checksum,
-            urgent_pointer,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], TcpHeader> {
         parse_tcp_header(input)
     }

@@ -5,6 +5,8 @@ authors = ["Martin Charles <martincharles07@gmail.com>"]
 
 [dependencies]
 nom = "4.0.0"
+failure = "0.1.2"
+failure_derive = "0.1.2"
 
 [dev-dependencies]
 hex = "0.3.2"

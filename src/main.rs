@@ -1,11 +1,16 @@
 #[macro_use]
 extern crate nom;
-extern crate core;
+
+#[macro_use]
+extern crate failure_derive;
+
+extern crate failure;
 
 mod ether;
 mod icmp;
 mod ip;
 mod mac_address;
+mod packet;
 mod tcp;
 mod udp;
 mod util;

@@ -38,7 +38,7 @@ pub struct PacketType {
 }
 
 impl PacketType {
-    fn new(value: u8) -> PacketType {
+    pub fn new(value: u8) -> PacketType {
         PacketType { value }
     }
 

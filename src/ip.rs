@@ -60,6 +60,10 @@ impl Ipv4Header {
     pub fn parse(input: &[u8]) -> IResult<&[u8], Ipv4Header> {
         parse_ip_header(input)
     }
+
+    pub fn protocol(&self) -> &Protocol {
+        &self.protocol
+}
 }
 
 named!(
@@ -115,22 +119,6 @@ pub struct TypeOfService {
 }
 
 impl TypeOfService {
-    fn new(
-        raw: u8,
-        precedence: u8,
-        low_delay: bool,
-        high_throughput: bool,
-        high_reliability: bool,
-    ) -> TypeOfService {
-        TypeOfService {
-            raw,
-            precedence,
-            low_delay,
-            high_throughput,
-            high_reliability,
-        }
-    }
-
     pub fn parse(input: &[u8]) -> IResult<&[u8], TypeOfService> {
         parse_ip_tos(input)
     }

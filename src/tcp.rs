@@ -80,6 +80,7 @@ named!(
             window_size:           bytes!(be_u16) >>
             checksum:              bytes!(be_u16) >>
             urgent_pointer:        bytes!(be_u16) >>
+                                   bytes!(take!((data_offset - 5) * 4)) >>
 
             (TcpHeader {
                 source_port,

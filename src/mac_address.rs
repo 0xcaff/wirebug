@@ -29,7 +29,7 @@ impl MacAddress {
     }
 }
 
-impl fmt::Debug for MacAddress {
+impl fmt::Display for MacAddress {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(
             f,
@@ -37,6 +37,12 @@ impl fmt::Debug for MacAddress {
             self.value[0], self.value[1], self.value[2],
             self.value[3], self.value[4], self.value[5]
         )
+    }
+}
+
+impl fmt::Debug for MacAddress {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        fmt::Display::fmt(self, f)
     }
 }
 

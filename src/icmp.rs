@@ -1,4 +1,4 @@
-use nom::{be_u16, be_u8};
+use nom::{be_u16, be_u8, IResult};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct IcmpPacket {
@@ -14,6 +14,10 @@ impl IcmpPacket {
             code,
             checksum,
         }
+    }
+
+    pub fn parse(input: &[u8]) -> IResult<&[u8], IcmpPacket> {
+        parse_icmp_packet(input)
     }
 }
 
@@ -66,13 +70,13 @@ impl PacketType {
 #[cfg(test)]
 mod tests {
     extern crate hex;
-    use icmp::{parse_icmp_packet, IcmpPacket, PacketType};
+    use icmp::{IcmpPacket, PacketType};
 
     #[test]
     fn parse() {
         // From: https://erg.abdn.ac.uk/users/gorry/eg3561/inet-pages/packet-dec2.html
         let input = hex::decode("000045da1e600000335e3ab8000042ac08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637").unwrap();
-        let (_, packet) = parse_icmp_packet(&input).unwrap();
+        let (_, packet) = IcmpPacket::parse(&input).unwrap();
         assert_eq!(packet, IcmpPacket::new(PacketType::new(0), 0, 0x45da))
     }
 }

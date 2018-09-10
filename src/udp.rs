@@ -1,4 +1,4 @@
-use nom::be_u16;
+use nom::{be_u16, IResult};
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct UdpPacket {
@@ -25,6 +25,10 @@ impl UdpPacket {
             data,
         }
     }
+
+    pub fn parse(input: &[u8]) -> IResult<&[u8], UdpPacket> {
+        parse_udp_packet(input)
+    }
 }
 
 named!(pub parse_udp_packet<UdpPacket>, do_parse!(
@@ -45,13 +49,13 @@ named!(pub parse_udp_packet<UdpPacket>, do_parse!(
 #[cfg(test)]
 mod tests {
     extern crate hex;
-    use udp::{parse_udp_packet, UdpPacket};
+    use udp::UdpPacket;
 
     #[test]
     fn parse() {
         // From: https://erg.abdn.ac.uk/users/gorry/course/inet-pages/packet-dec12.html
         let raw = hex::decode("99d0043f0012722868656c6c6f68656c6c6f").unwrap();
-        let (_, packet) = parse_udp_packet(&raw).unwrap();
+        let (_, packet) = UdpPacket::parse(&raw).unwrap();
         assert_eq!(
             packet,
             UdpPacket::new(

@@ -1,4 +1,4 @@
-use nom::{be_u16, be_u8};
+use nom::{be_u16, be_u8, IResult};
 use std::net::Ipv4Addr;
 use util::take_bool;
 
@@ -56,10 +56,14 @@ impl Ipv4Header {
             destination,
         }
     }
+
+    pub fn parse(input: &[u8]) -> IResult<&[u8], Ipv4Header> {
+        parse_ip_header(input)
+    }
 }
 
 named!(
-    pub parse_ip_packet<Ipv4Header>,
+    pub parse_ip_header<Ipv4Header>,
     bits!(do_parse!(
                                 tag_bits!(u8, 4, 4) >>
         internet_header_length: take_bits!(u8, 4) >>
@@ -126,6 +130,10 @@ impl TypeOfService {
             high_reliability,
         }
     }
+
+    pub fn parse(input: &[u8]) -> IResult<&[u8], TypeOfService> {
+        parse_ip_tos(input)
+    }
 }
 
 named!(pub parse_ip_tos<TypeOfService>,
@@ -171,13 +179,13 @@ impl Protocol {
 mod tests {
     extern crate hex;
 
-    use ip::{parse_ip_addr, parse_ip_packet, parse_ip_tos, Ipv4Header, Protocol, TypeOfService};
+    use ip::{parse_ip_addr, Ipv4Header, Protocol, TypeOfService};
     use std::net::Ipv4Addr;
 
     #[test]
     fn parse_tos() {
         let raw: u8 = 0b10000100;
-        let (_, tos) = parse_ip_tos(&[raw]).unwrap();
+        let (_, tos) = TypeOfService::parse(&[raw]).unwrap();
         assert_eq!(tos, TypeOfService::new(raw, 0b100, false, false, true))
     }
 
@@ -192,14 +200,14 @@ mod tests {
     }
 
     #[test]
-    fn parse_packet() {
+    fn parse_header() {
         let raw = hex::decode("4520003C16DB00003F06CC8AD5E9AB0A5EB6B88C").unwrap();
-        let (_, packet) = parse_ip_packet(&raw).unwrap();
+        let (_, packet) = Ipv4Header::parse(&raw).unwrap();
         assert_eq!(
             packet,
             Ipv4Header::new(
                 5,
-                parse_ip_tos(&[0x20]).unwrap().1,
+                TypeOfService::parse(&[0x20]).unwrap().1,
                 60,
                 0x16db,
                 false,

@@ -1,4 +1,4 @@
-use nom::{be_u16, be_u32};
+use nom::{be_u16, be_u32, IResult};
 use util::take_bool;
 
 #[derive(Eq, PartialEq, Debug)]
@@ -57,6 +57,10 @@ impl TcpHeader {
             urgent_pointer,
         }
     }
+
+    pub fn parse(input: &[u8]) -> IResult<&[u8], TcpHeader> {
+        parse_tcp_header(input)
+    }
 }
 
 named!(
@@ -105,14 +109,13 @@ named!(
 #[cfg(test)]
 mod tests {
     extern crate hex;
-    use tcp::parse_tcp_header;
     use tcp::TcpHeader;
 
     #[test]
     fn parse() {
         // From: https://erg.abdn.ac.uk/users/gorry/eg3561/inet-pages/packet-decode3.html
         let raw = hex::decode("900500177214f1140000000060022238a92c0000020405b4").unwrap();
-        let (_, packet) = parse_tcp_header(&raw).unwrap();
+        let (_, packet) = TcpHeader::parse(&raw).unwrap();
         assert_eq!(
             packet,
             TcpHeader::new(

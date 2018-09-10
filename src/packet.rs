@@ -1,5 +1,5 @@
 use ether::EtherFrame;
-use icmp::IcmpPacket;
+use icmp::IcmpHeader;
 use ip::Ipv4Header;
 use ip::Protocol;
 use tcp::TcpHeader;
@@ -58,7 +58,7 @@ impl Packet {
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum PacketContents {
-    ICMP { packet: IcmpPacket },
+    ICMP { header: IcmpHeader, data: Vec<u8> },
 
     TCP { header: TcpHeader, data: Vec<u8> },
 
@@ -71,10 +71,12 @@ impl PacketContents {
     fn parse(proto: &Protocol, input: &[u8]) -> Result<PacketContents, ParseError> {
         let contents = match proto {
             Protocol::ICMP => {
-                let (_, packet) =
-                    IcmpPacket::parse(input).map_err(|_e| ParseError::InvalidIcmpPacket)?;
+                let (after_header, header) =
+                    IcmpHeader::parse(input).map_err(|_e| ParseError::InvalidIcmpPacket)?;
 
-                PacketContents::ICMP { packet }
+                let data = after_header.to_vec();
+
+                PacketContents::ICMP { header, data }
             }
             Protocol::TCP => {
                 let (after_header, header) =
@@ -101,7 +103,7 @@ mod tests {
     extern crate hex;
 
     use ether::EtherFrame;
-    use icmp::IcmpPacket;
+    use icmp::IcmpHeader;
     use ip::Ipv4Header;
     use packet::{Packet, PacketContents};
     use tcp::TcpHeader;
@@ -112,11 +114,13 @@ mod tests {
         // From: https://erg.abdn.ac.uk/users/gorry/eg3561/inet-pages/packet-dec2.html
         let raw_ether_frame = hex::decode("08002086354b00e0f7263fe90800").unwrap();
         let raw_ip_header = hex::decode("45000054aafb4000fc01fa308b85e9028b85d96e").unwrap();
-        let raw_icmp_packet = hex::decode("000045da1e600000335e3ab8000042ac08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637").unwrap();
+        let raw_icmp_header = hex::decode("000045da1e600000").unwrap();
+        let raw_icmp_data = hex::decode("335e3ab8000042ac08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637").unwrap();
 
         let mut raw = raw_ether_frame.clone();
         raw.append(&mut raw_ip_header.clone());
-        raw.append(&mut raw_icmp_packet.clone());
+        raw.append(&mut raw_icmp_header.clone());
+        raw.append(&mut raw_icmp_data.clone());
 
         let packet = Packet::parse(&raw).unwrap();
 
@@ -126,7 +130,8 @@ mod tests {
                 EtherFrame::parse(&raw_ether_frame).unwrap().1,
                 Ipv4Header::parse(&raw_ip_header).unwrap().1,
                 PacketContents::ICMP {
-                    packet: IcmpPacket::parse(&raw_icmp_packet).unwrap().1,
+                    header: IcmpHeader::parse(&raw_icmp_header).unwrap().1,
+                    data: raw_icmp_data,
                 }
             )
         )

@@ -1,5 +1,6 @@
 use nom::{be_u16, be_u8};
 use std::net::Ipv4Addr;
+use util::take_bool;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Ipv4 {
@@ -66,8 +67,8 @@ named!(
         total_length:           bytes!(be_u16) >>
         identification:         bytes!(be_u16) >>
                                 tag_bits!(u8, 1, 0) >>
-        dont_fragment:          take_bits!(u8, 1) >>
-        more_fragments:         take_bits!(u8, 1) >>
+        dont_fragment:          take_bool >>
+        more_fragments:         take_bool >>
         fragment_offset:        take_bits!(u16, 13) >>
         time_to_live:           bytes!(be_u8) >>
         protocol:               bytes!(be_u8) >>
@@ -79,8 +80,8 @@ named!(
             type_of_service,
             total_length,
             identification,
-            dont_fragment: dont_fragment == 1,
-            more_fragments: more_fragments == 1,
+            dont_fragment,
+            more_fragments,
             fragment_offset,
             time_to_live,
             protocol: Protocol::from_number(protocol),
@@ -132,16 +133,16 @@ named!(pub parse_ip_tos<TypeOfService>,
         do_parse!(
             raw:              peek!(take_bits!(u8, 8)) >>
             precedence:       take_bits!(u8, 3) >>
-            low_delay:        take_bits!(u8, 1) >>
-            high_throughput:  take_bits!(u8, 1) >>
-            high_reliability: take_bits!(u8, 1) >>
+            low_delay:        take_bool >>
+            high_throughput:  take_bool >>
+            high_reliability: take_bool >>
                               tag_bits!(u8, 2, 0) >>
             (TypeOfService {
                 raw,
                 precedence,
-                low_delay: low_delay == 1,
-                high_throughput: high_throughput == 1,
-                high_reliability: high_reliability == 1,
+                low_delay,
+                high_throughput,
+                high_reliability,
             })
         )
     )

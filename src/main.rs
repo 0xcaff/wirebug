@@ -8,6 +8,7 @@ mod ip;
 mod mac_address;
 mod tcp;
 mod udp;
+mod util;
 
 fn main() {
     println!("Hello, world!");

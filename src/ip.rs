@@ -3,7 +3,7 @@ use std::net::Ipv4Addr;
 use util::take_bool;
 
 #[derive(Debug, Eq, PartialEq)]
-pub struct Ipv4 {
+pub struct Ipv4Header {
     internet_header_length: u8,
 
     type_of_service: TypeOfService,
@@ -22,7 +22,7 @@ pub struct Ipv4 {
     destination: Ipv4Addr,
 }
 
-impl Ipv4 {
+impl Ipv4Header {
     pub fn new(
         internet_header_length: u8,
 
@@ -40,8 +40,8 @@ impl Ipv4 {
         header_checksum: u16,
         source: Ipv4Addr,
         destination: Ipv4Addr,
-    ) -> Ipv4 {
-        Ipv4 {
+    ) -> Ipv4Header {
+        Ipv4Header {
             internet_header_length,
             type_of_service,
             total_length,
@@ -59,7 +59,7 @@ impl Ipv4 {
 }
 
 named!(
-    pub parse_ip_packet<Ipv4>,
+    pub parse_ip_packet<Ipv4Header>,
     bits!(do_parse!(
                                 tag_bits!(u8, 4, 4) >>
         internet_header_length: take_bits!(u8, 4) >>
@@ -75,7 +75,7 @@ named!(
         header_checksum:        bytes!(be_u16) >>
         source:                 bytes!(parse_ip_addr) >>
         destination:            bytes!(parse_ip_addr) >>
-            (Ipv4 {
+            (Ipv4Header {
             internet_header_length,
             type_of_service,
             total_length,
@@ -171,7 +171,7 @@ impl Protocol {
 mod tests {
     extern crate hex;
 
-    use ip::{parse_ip_addr, parse_ip_packet, parse_ip_tos, Ipv4, Protocol, TypeOfService};
+    use ip::{parse_ip_addr, parse_ip_packet, parse_ip_tos, Ipv4Header, Protocol, TypeOfService};
     use std::net::Ipv4Addr;
 
     #[test]
@@ -197,7 +197,7 @@ mod tests {
         let (_, packet) = parse_ip_packet(&raw).unwrap();
         assert_eq!(
             packet,
-            Ipv4::new(
+            Ipv4Header::new(
                 5,
                 parse_ip_tos(&[0x20]).unwrap().1,
                 60,

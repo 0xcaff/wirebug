@@ -9,7 +9,7 @@ pub struct EtherFrame {
 }
 
 impl EtherFrame {
-    fn parse(input: &[u8]) -> IResult<&[u8], EtherFrame> {
+    pub fn parse(input: &[u8]) -> IResult<&[u8], EtherFrame> {
         do_parse!(
             input,
             destination: parse_mac_address >> 
